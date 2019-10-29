@@ -33,7 +33,24 @@ public class GameManager {
 
     private Counter counter = new Counter(12);
     private Counter gameCounter = new Counter();
-    private AnimationTimer gameTimer;
+
+    private AnimationTimer gameTimer = new AnimationTimer() {
+        @Override
+        public void handle(long now) {
+            gameBackground.move();
+            controls.playerManeuvering();
+            playerProjectiles.move();
+            enemy.move();
+            enemy.shoot();
+            enemy.moveProjectile();
+            meteors.move();
+            heart.move();
+            position.checkAndRelocateGameElements(height, playerProjectilesList, meteorsList, enemiesList, heartsArray);
+            collision.check();
+            impediment.makeGameHarder(meteorsList, enemiesList);
+
+        }
+    };
 
     private AnchorPane gamePane = new AnchorPane();
     private GameBackground gameBackground = new GameBackground(gamePane);
@@ -66,7 +83,7 @@ public class GameManager {
 
     public void createNewGame(Stage menuStage) {
         menuStage.hide();
-        createGameLoop();
+        gameTimer.start();
         createGameElements();
         gameStage.show();
     }
@@ -76,26 +93,5 @@ public class GameManager {
         enemy.create(5);
         meteors.create(5);
         heart.create();
-    }
-
-    private void createGameLoop() {
-        gameTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                gameBackground.move();
-                controls.playerManeuvering();
-                playerProjectiles.move();
-                enemy.move();
-                enemy.shoot();
-                enemy.moveProjectile();
-                meteors.move();
-                heart.move();
-                position.checkAndRelocateGameElements(height, playerProjectilesList, meteorsList, enemiesList, heartsArray);
-                collision.check();
-                impediment.makeGameHarder(meteorsList, enemiesList);
-
-            }
-        };
-        gameTimer.start();
     }
 }
